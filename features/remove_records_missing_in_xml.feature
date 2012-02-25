@@ -5,7 +5,7 @@ Feature: Remove records missing in XML
 
   Scenario: Attempt removing missing records when records exist in the database with some matching records in the XML Document
     Given I have a fresh set of books
-    And I have the "test/fixtures/xml/books_changed.xml" with books in it
+    And I have the "test/fixtures/xml/books_changed.xml" file
     When I synchronise with "test/fixtures/xml/books_changed.xml"
     Then the books in the database that don't exist in "test/fixtures/xml/books_changed.xml" will no longer exist in the database
     And the chapters in the database that don't exist in "test/fixtures/xml/books_changed.xml" will no longer exist in the database

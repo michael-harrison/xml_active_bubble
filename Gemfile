@@ -8,7 +8,7 @@ gem 'rails', '3.0.7'
 gem 'mysql2', '<=0.2.7'
 gem 'cucumber'
 gem 'cucumber-rails', :group => [:test, :development]
-gem 'xml_active'
+gem 'xml_active', '0.0.3'
 
 group :test, :development do
   gem 'database_cleaner'

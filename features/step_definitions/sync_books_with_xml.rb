@@ -9,7 +9,7 @@ Given /^I have no books$/ do
   end
 end
 
-When /^I have the "([^"]*)" with books in it$/ do |xml_document_file|
+When /^I have the "([^"]*)" file$/ do |xml_document_file|
   if File.exists?(xml_document_file)
     xml_document = Nokogiri::XML(File.open(Rails.root.join(xml_document_file)).read)
     xml_document.children.first.name.downcase.eql?("books") || xml_document.children.first.name.downcase.eql?("book")
@@ -20,6 +20,17 @@ end
 
 When /^I synchronise with "([^"]*)"$/ do |xml_document_file|
   Book.many_from_xml(File.open(Rails.root.join(xml_document_file)).read, [:sync]) != nil
+end
+
+When /^I synchronise with "([^"]*)" I should get an error$/ do |xml_document_file|
+  begin
+    Book.many_from_xml(File.open(Rails.root.join(xml_document_file)).read, [:sync]) != nil
+    fail "Error was didn't happen"
+  rescue Exception => e
+    if e.message.exclude? "Too many records for one to one association"
+      fail "Wrong exception was raised"
+    end
+  end
 end
 
 When /^I update with "([^"]*)"$/ do |xml_document_file|
@@ -60,13 +71,59 @@ Then /^the books in the database will be identical to those in "([^"]*)"$/ do |x
   end
 end
 
+When /^the book price will be identical to those in "([^"]*)"$/ do |xml_document_file|
+  book_prices_in_database = BookPrice.all
+  if book_prices_in_database.count > 0
+    xml_document = Nokogiri::XML(File.open(Rails.root.join(xml_document_file)).read)
+
+    # Ensure that all chapters in the xml document have been recorded
+
+    xml_document.xpath("//book").each do |book_element|
+      book_id = book_element.xpath("id").text
+
+      xml_document.xpath("//book[id[text()='#{book_id}']]/book_price").each do |book_price_element|
+        book_price_id = book_price_element.xpath("id")[0].text
+        book_price = BookPrice.find book_price_id
+        if book_price.nil?
+          fail "BookPrice with id #{book_price_id} is missing"
+        else
+          book_price_sell = book_price_element.xpath("sell").text
+          book_price_educational = book_price_element.xpath("educational").text
+          book_price_cost = book_price_element.xpath("cost").text
+
+          if Float(book_price_sell) != book_price.sell
+            fail "BookPrice 'sell' in database doesn't match book price sell in xml for book price with id #{book_price_id}, XML: #{book_price_sell}, Database: #{book_price.sell}"
+          end
+
+          if Float(book_price_cost) != book_price.cost
+            fail "BookPrice 'cost' in database doesn't match book price cost in xml for book price with id #{book_price_id}, XML: #{book_price_cost}, Database: #{book_price.cost}"
+          end
+
+          if Float(book_price_educational) != book_price.educational
+            fail "BookPrice 'educational' in database doesn't match book price educational in xml for book price with id #{book_price_id}, XML: #{book_price_educational}, Database: #{book_price.educational}"
+          end
+
+          if Integer(book_id) != book_price.book_id
+            fail "BookPrice 'book_id' in database doesn't match book_id in xml for book price with id #{book_price_id}, XML: #{book_id}, Database: #{book_price.book_id}"
+          end
+        end
+      end
+    end
+
+    # Ensure there are not extra book prices
+    book_prices_in_xml = xml_document.xpath("//book_price")
+    if book_prices_in_database.count != book_prices_in_xml.count
+      fail "There number of book prices in the database (#{book_prices_in_database.count}) doesn't match the number of book prices in the xml document (#{book_prices_in_xml.count})"
+    end
+  end
+end
+
 When /^the chapters will be identical to those in "([^"]*)"$/ do |xml_document_file|
   chapters_in_database = Chapter.all
   if chapters_in_database.count > 0
     xml_document = Nokogiri::XML(File.open(Rails.root.join(xml_document_file)).read)
 
     # Ensure that all chapters in the xml document have been recorded
-
     xml_document.xpath("//book").each do |book_element|
       book_id = book_element.xpath("id").text
       xml_document.xpath("//book[id[text()='#{book_id}']]/chapters/chapter").each do |chapter_element|
@@ -109,7 +166,6 @@ When /^the database will contain identical pages for the chapters as those in "(
     xml_document = Nokogiri::XML(File.open(Rails.root.join(xml_document_file)).read)
 
     # Ensure that all chapters in the xml document have been recorded
-
     xml_document.xpath("//book").each do |book_element|
       book_id = book_element.xpath("id").text
       xml_document.xpath("//book[id[text()='#{book_id}']]/chapters/chapter").each do |chapter_element|
@@ -155,4 +211,12 @@ end
 
 Given /^I have a fresh set of books$/ do
   Book.many_from_xml(File.open(Rails.root.join("test/fixtures/xml/books_fresh.xml")).read, [:sync]) != nil
+end
+
+Given /^I have a fresh set of books without the one to one record$/ do
+  Book.many_from_xml(File.open(Rails.root.join("test/fixtures/xml/books_without_one_to_one.xml")).read, [:sync]) != nil
+end
+
+Given /^I have a fresh set of books without any chapters$/ do
+  Book.many_from_xml(File.open(Rails.root.join("test/fixtures/xml/books_without_chapters.xml")).read, [:sync]) != nil
 end

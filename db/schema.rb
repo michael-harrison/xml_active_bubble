@@ -10,7 +10,16 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110710073024) do
+ActiveRecord::Schema.define(:version => 20120211062106) do
+
+  create_table "book_prices", :force => true do |t|
+    t.float    "sell"
+    t.float    "educational"
+    t.float    "cost"
+    t.integer  "book_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "books", :force => true do |t|
     t.string   "name"

@@ -5,7 +5,7 @@ Feature: Update database with XML
 
   Scenario: Attempting to update when some records have the same identifying features as those in teh XML Document
     Given I have a fresh set of books
-    And I have the "test/fixtures/xml/books_changed.xml" with books in it
+    And I have the "test/fixtures/xml/books_changed.xml" file
     When I update with "test/fixtures/xml/books_changed.xml"
     Then the books with the same identifying features as those in "test/fixtures/xml/books_changed.xml" will be updated
     And the chapters with the same identifying features as those in "test/fixtures/xml/books_changed.xml" will be updated

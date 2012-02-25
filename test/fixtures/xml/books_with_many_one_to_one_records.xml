@@ -9,6 +9,12 @@
       <educational>35.00</educational>
       <cost>20.00</cost>
     </book_price>
+    <book_price>
+      <id type="integer">2</id>
+      <sell>55.00</sell>
+      <educational>40.00</educational>
+      <cost>25.00</cost>
+    </book_price>
     <chapters type="array">
       <chapter>
         <id type="integer">1</id>
