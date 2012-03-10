@@ -1,3 +1,5 @@
+require "active_record/fixtures"
+
 Then /^the books with the same identifying features as those in "([^"]*)" will be updated$/ do |xml_document_file|
   books_in_database = Book.all
   xml_document = Nokogiri::XML(File.open(Rails.root.join(xml_document_file)).read)
@@ -143,10 +145,15 @@ Then /^the pages with the same identifying features as those in "([^"]*)" will b
     end
   end
 
-  # Ensure there are not extra pages
-  pages_in_xml = xml_document.xpath("//page")
+  # Ensure there are no extra pages
   pages_in_database = Page.all
-  if pages_in_database.count != pages_in_xml.count
-    fail "There number of pages in the database (#{pages_in_database.count}) doesn't match the number of pages in the xml document (#{pages_in_xml.count})"
+  if pages_in_database.count != @original_pages.count
+    fail "There number of pages in the database (#{pages_in_database.count}) doesn't match the original number of pages (#{@original_pages.count})"
   end
+end
+Given /^I have no matching books$/ do
+  Fixtures.reset_cache
+  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'no_matching_records')
+  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
+  Fixtures.create_fixtures(fixtures_folder, fixtures)
 end

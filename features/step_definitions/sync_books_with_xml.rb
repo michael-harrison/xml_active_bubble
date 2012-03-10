@@ -1,5 +1,6 @@
 require "nokogiri"
 require "xml_active"
+require "active_record/fixtures"
 
 Given /^I have no books$/ do
   Book.destroy_all
@@ -210,13 +211,22 @@ When /^the database will contain identical pages for the chapters as those in "(
 end
 
 Given /^I have a fresh set of books$/ do
-  Book.many_from_xml(File.open(Rails.root.join("test/fixtures/xml/books_fresh.xml")).read, [:sync]) != nil
+  Fixtures.reset_cache
+  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'fresh')
+  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
+  Fixtures.create_fixtures(fixtures_folder, fixtures)
 end
 
 Given /^I have a fresh set of books without the one to one record$/ do
-  Book.many_from_xml(File.open(Rails.root.join("test/fixtures/xml/books_without_one_to_one.xml")).read, [:sync]) != nil
+  Fixtures.reset_cache
+  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'without_one_to_one')
+  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
+  Fixtures.create_fixtures(fixtures_folder, fixtures)
 end
 
 Given /^I have a fresh set of books without any chapters$/ do
-  Book.many_from_xml(File.open(Rails.root.join("test/fixtures/xml/books_without_chapters.xml")).read, [:sync]) != nil
+  Fixtures.reset_cache
+  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'without_chapters')
+  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
+  Fixtures.create_fixtures(fixtures_folder, fixtures)
 end
