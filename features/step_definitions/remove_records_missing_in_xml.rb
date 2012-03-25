@@ -1,3 +1,5 @@
+require_relative "step_helper"
+
 When /^I synchronise with "([^"]*)" to only remove mismatching records$/ do |xml_document_file|
   Book.many_from_xml(File.open(Rails.root.join(xml_document_file)).read, [:destroy]) != nil
 end

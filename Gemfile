@@ -1,19 +1,19 @@
 source 'http://rubygems.org'
 
-gem 'rails', '3.0.7'
+gem 'rails', '3.2.2'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'mysql2', '<=0.2.7'
+gem 'mysql2', '<=0.3.11'
 gem 'cucumber'
-gem 'cucumber-rails', :group => [:test, :development]
 gem 'xml_active', '0.0.3'
 
 group :test, :development do
   gem 'database_cleaner'
   gem 'guard-cucumber'
   gem 'growl_notify'
+  gem 'cucumber-rails'
 end
 
 # Use unicorn as the web server

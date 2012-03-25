@@ -1,5 +1,6 @@
 require "nokogiri"
 require "xml_active"
+require_relative "step_helper"
 require "active_record/fixtures"
 
 Given /^I have no books$/ do
@@ -211,22 +212,13 @@ When /^the database will contain identical pages for the chapters as those in "(
 end
 
 Given /^I have a fresh set of books$/ do
-  Fixtures.reset_cache
-  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'fresh')
-  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
-  Fixtures.create_fixtures(fixtures_folder, fixtures)
+  StepHelper.load_fixtures File.join(Rails.root, 'test', 'fixtures', 'fresh')
 end
 
 Given /^I have a fresh set of books without the one to one record$/ do
-  Fixtures.reset_cache
-  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'without_one_to_one')
-  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
-  Fixtures.create_fixtures(fixtures_folder, fixtures)
+  StepHelper.load_fixtures File.join(Rails.root, 'test', 'fixtures', 'without_one_to_one')
 end
 
 Given /^I have a fresh set of books without any chapters$/ do
-  Fixtures.reset_cache
-  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'without_chapters')
-  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
-  Fixtures.create_fixtures(fixtures_folder, fixtures)
+  StepHelper.load_fixtures File.join(Rails.root, 'test', 'fixtures', 'without_chapters')
 end

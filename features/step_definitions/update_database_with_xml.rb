@@ -1,4 +1,5 @@
 require "active_record/fixtures"
+require_relative "step_helper"
 
 Then /^the books with the same identifying features as those in "([^"]*)" will be updated$/ do |xml_document_file|
   books_in_database = Book.all
@@ -152,8 +153,6 @@ Then /^the pages with the same identifying features as those in "([^"]*)" will b
   end
 end
 Given /^I have no matching books$/ do
-  Fixtures.reset_cache
-  fixtures_folder = File.join(Rails.root, 'test', 'fixtures', 'no_matching_records')
-  fixtures = Dir[File.join(fixtures_folder, '*.yml')].map {|f| File.basename(f, '.yml') }
-  Fixtures.create_fixtures(fixtures_folder, fixtures)
+  StepHelper.load_fixtures File.join(Rails.root, 'test', 'fixtures', 'no_matching_records')
 end
+
